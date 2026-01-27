@@ -1,6 +1,8 @@
 package usecase
 
 import (
+	"context"
+
 	"github.com/zmonsoonz/go-test-api/internal/content/ports"
 )
 type UserService struct {
@@ -9,4 +11,10 @@ type UserService struct {
 
 func NewUserService(repository ports.UserRepository) *UserService {
 	return &UserService{repository: repository}
+}
+
+func (u *UserService) Get(ctx context.Context)  {
+	if ctx != nil {
+		u.repository.Get(ctx)
+	}
 }

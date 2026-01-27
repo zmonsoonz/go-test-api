@@ -7,6 +7,11 @@ import (
 	"github.com/zmonsoonz/go-test-api/internal/platform/config"
 )
 
+const (
+	UsersTable = "users"
+	TracksTable = "tracks"
+	LibrariesTable = "libraries"
+)
 
 func OpenPostgresDB(cfg config.DBConfig) (*sqlx.DB, error) {
 	dsn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=%s",

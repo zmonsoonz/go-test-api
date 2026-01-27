@@ -1,9 +1,11 @@
 package domain
 
+import "time"
+
 type User struct {
 	Id int `json:"id"`
-	Username string `json:"username"`
-	Email string `json:"email"`
-	CreatedAt  string `json:"created_at"`
-	Password string `json:"password"`
+	Username string `json:"username" binding:"required"`
+	Email string `json:"email" binding:"required"`
+	CreatedAt  time.Time `json:"created_at"`
+	Password string `json:"password" binding:"required"`
 }
