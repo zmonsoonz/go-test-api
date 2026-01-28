@@ -21,6 +21,7 @@ func (h *Handler) InitAuthRoutes(r gin.IRouter) {
 	auth := r.Group("auth")
 	{
 		auth.POST("/sign-up", h.SignUp)
+		auth.POST("/sign-in", h.SignIn)
 	}
 }
 func (h *Handler) SignUp (c *gin.Context) {
@@ -40,6 +41,23 @@ func (h *Handler) SignUp (c *gin.Context) {
 	})
 }
 
-// func (h *Handler) SignIn (c *gin.Context)  {
-	
-// }
+type SignInInput struct {
+	Username string `json:"username" binding:"required"`
+	Password string `json:"password" binding:"required"`
+}
+func (h *Handler) SignIn (c *gin.Context)  {
+	var input SignInInput
+
+	if err := c.BindJSON(&input); err != nil {
+		httpx.NewErrorResponse(c, http.StatusBadRequest, err.Error())
+	}
+         
+	token, err := h.authService.GenerateToken(input.Username, input.Password)
+	if err != nil {
+		httpx.NewErrorResponse(c, http.StatusInternalServerError, err.Error())
+	}
+
+	c.JSON(http.StatusOK, map[string]interface{}{
+		"token": token,
+	})
+}

@@ -6,8 +6,10 @@ import (
 
 type AuthService interface {
 	CreateUser(user domain.User) (int, error)
+	GenerateToken(username, password string) (string, error)
 }
 
 type AuthRepository interface {
 	CreateUser(user domain.User) (int, error)
+	GetUser(username string) (domain.User, error)
 }

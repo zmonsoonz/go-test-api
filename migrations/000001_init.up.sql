@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS libraries (
     
     CONSTRAINT fk_libraries_user
         FOREIGN KEY (user_id)
-        REFERENCES users(user_id)
+        REFERENCES users(id)
         ON DELETE CASCADE
 );
 
@@ -27,6 +27,6 @@ CREATE TABLE IF NOT EXISTS tracks (
     
     CONSTRAINT fk_tracks_library
         FOREIGN KEY (library_id)
-        REFERENCES libraries(library_id)
+        REFERENCES libraries(id)
         ON DELETE CASCADE
 );
