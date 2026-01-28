@@ -18,7 +18,7 @@ func NewAuthHandler(authService ports.AuthService) *Handler {
 }
 
 func (h *Handler) InitAuthRoutes(r gin.IRouter) {
-	auth := r.Group("auth")
+	auth := r.Group("/auth")
 	{
 		auth.POST("/sign-up", h.SignUp)
 		auth.POST("/sign-in", h.SignIn)

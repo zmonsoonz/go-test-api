@@ -1,6 +1,7 @@
 package usecase
 
 import (
+	"errors"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -10,6 +11,9 @@ import (
 )
 
 
+const (
+	secret = "secret"
+)
 type AuthService struct {
 	repository ports.AuthRepository
 }
@@ -46,7 +50,7 @@ func (s *AuthService) GenerateToken(username, password string) (string, error)  
 	if err != nil {
 		return "", err
 	}
-	
+
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, &tokenClaims {
 		jwt.MapClaims{
 		"ExpiresAt":     time.Now().Add(24 * time.Hour).Unix(),
@@ -55,5 +59,28 @@ func (s *AuthService) GenerateToken(username, password string) (string, error)  
 		user.Id,
 	})
 
-	return token.SignedString([]byte("secret"))
+	return token.SignedString([]byte(secret))
 } 
+
+func (s *AuthService) ParseToken(accessToken string) (int, error) {
+	token, err := jwt.ParseWithClaims(
+		accessToken,
+		&tokenClaims{},
+		func(token *jwt.Token) (interface{}, error) {
+			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+				return nil, errors.New("unexpected signing method")
+			}
+			return []byte(secret), nil
+		},
+	)
+	if err != nil {
+		return 0, err
+	}
+
+	claims, ok := token.Claims.(*tokenClaims)
+	if !ok || !token.Valid {
+		return 0, errors.New("invalid token")
+	}
+
+	return claims.UserId, nil
+}
