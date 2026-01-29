@@ -7,7 +7,6 @@ import (
 )
 
 type Repos struct {
-	User ports.UserRepository
 	Auth ports.AuthRepository
 }
 

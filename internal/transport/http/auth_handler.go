@@ -29,14 +29,16 @@ func (h *Handler) SignUp (c *gin.Context) {
 
 	if err := c.BindJSON(&input); err != nil {
 		httpx.NewErrorResponse(c, http.StatusBadRequest, err.Error())
+		return
 	}
          
 	id, err := h.authService.CreateUser(input)
 	if err != nil {
-		httpx.NewErrorResponse(c, http.StatusInternalServerError, err.Error())
+		httpx.NewErrorResponse(c, http.StatusBadRequest, err.Error())
+		return
 	}
 
-	c.JSON(http.StatusOK, map[string]interface{}{
+	c.JSON(http.StatusCreated, map[string]interface{}{
 		"id": id,
 	})
 }
@@ -50,11 +52,13 @@ func (h *Handler) SignIn (c *gin.Context)  {
 
 	if err := c.BindJSON(&input); err != nil {
 		httpx.NewErrorResponse(c, http.StatusBadRequest, err.Error())
+		return
 	}
          
 	token, err := h.authService.GenerateToken(input.Username, input.Password)
 	if err != nil {
-		httpx.NewErrorResponse(c, http.StatusInternalServerError, err.Error())
+		httpx.NewErrorResponse(c, http.StatusUnauthorized, err.Error())
+		return
 	}
 
 	c.JSON(http.StatusOK, map[string]interface{}{

@@ -1,17 +1,17 @@
 package bootstrap
 
 import (
-	"net/http"
-
 	"github.com/gin-gonic/gin"
+	"github.com/zmonsoonz/go-test-api/internal/transport/middleware"
 )
 
 
-func InitRouter(handlers *Handlers) *gin.Engine {
+func InitRouter(handlers *Handlers, services *Services) *gin.Engine {
 	router := gin.New()
+	router.Use(middleware.UserIdentity(services.Auth))
 
+	router.Group("/api")
 	handlers.Auth.InitAuthRoutes(router)
 
-	router.Group("/api", handlers.Auth.UserIdentity)
 	return router
 }
