@@ -16,15 +16,28 @@ func NewAuthRep(db *sqlx.DB) *AuthRep {
 }
 
 func (r *AuthRep) CreateUser(user domain.User) (int, error)  {
-	var id int
-	query := fmt.Sprintf("INSERT INTO %s (username, password_hash, email, created_at) VALUES ($1, $2, $3, $4) RETURNING id", postgres.UsersTable)
-
-	row := r.db.QueryRow(query, user.Username, user.Password, user.Email, user.CreatedAt)
-
-	if err := row.Scan(&id); err != nil {
+	tx, err := r.db.Begin()
+	if err != nil {
 		return 0, err
 	}
-	return id, nil
+	defer tx.Rollback()
+	var id int
+
+	createUserQuery := fmt.Sprintf("INSERT INTO %s (username, password_hash, email, created_at) VALUES ($1, $2, $3, $4) RETURNING id", postgres.UsersTable)
+	row := tx.QueryRow(createUserQuery, user.Username, user.Password, user.Email, user.CreatedAt)
+	if err := row.Scan(&id); err != nil {
+		tx.Rollback()
+		return 0, err
+	}
+
+	createLibraryQuery := fmt.Sprintf("INSERT INTO %s (user_id, created_at) VALUES ($1, $2)", postgres.LibrariesTable)
+	_, err = tx.Exec(createLibraryQuery, id, user.CreatedAt)
+
+	if err != nil {
+		tx.Rollback()
+		return 0, err
+	}
+	return id, tx.Commit()
 }
 
 

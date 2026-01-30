@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"errors"
 	"net/http"
 	"strings"
 
@@ -36,4 +37,20 @@ func UserIdentity(authService ports.AuthService) gin.HandlerFunc {
 		c.Set("userId", userID)
 		c.Next()
 	}
+}
+
+func GetUserId(c *gin.Context) (int, error) {
+	userId, ok := c.Get("userId")
+	if !ok {
+		httpx.NewErrorResponse(c, http.StatusUnauthorized, "user not authorized")
+		return 0, errors.New("user not authorized")
+	}
+		
+	id, ok := userId.(int) // приводим к типу int т.к. Get возвращает interface{}
+	if !ok {
+		httpx.NewErrorResponse(c, http.StatusUnauthorized, "user not authorized")
+		return 0, errors.New("user not authorized")
+	}
+
+	return id, nil
 }
