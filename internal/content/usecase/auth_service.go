@@ -28,7 +28,7 @@ func NewAuthService(repository ports.AuthRepository) *AuthService {
 
 func (s *AuthService) CreateUser(user domain.User) (int, error)  {
 	user.Password = generatePasswordHash(user.Password)
-	user.CreatedAt = time.Now()
+	user.CreatedAt = time.Now().Unix()
 	return s.repository.CreateUser(user)
 } 
 
