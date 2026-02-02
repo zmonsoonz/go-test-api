@@ -9,22 +9,22 @@ import (
 	"github.com/zmonsoonz/go-test-api/internal/platform/httpx"
 )
 
-type Handler struct {
+type AuthHandler struct {
 	authService ports.AuthService
 }
 
-func NewAuthHandler(authService ports.AuthService) *Handler {
-	return &Handler{authService: authService}
+func NewAuthHandler(authService ports.AuthService) *AuthHandler {
+	return &AuthHandler{authService: authService}
 }
 
-func (h *Handler) InitAuthRoutes(r gin.IRouter) {
+func (h *AuthHandler) InitAuthRoutes(r gin.IRouter) {
 	auth := r.Group("/auth")
 	{
 		auth.POST("/sign-up", h.SignUp)
 		auth.POST("/sign-in", h.SignIn)
 	}
 }
-func (h *Handler) SignUp (c *gin.Context) {
+func (h *AuthHandler) SignUp (c *gin.Context) {
 	var input domain.User
 
 	if err := c.BindJSON(&input); err != nil {
@@ -47,7 +47,7 @@ type SignInInput struct {
 	Username string `json:"username" binding:"required"`
 	Password string `json:"password" binding:"required"`
 }
-func (h *Handler) SignIn (c *gin.Context)  {
+func (h *AuthHandler) SignIn (c *gin.Context)  {
 	var input SignInInput
 
 	if err := c.BindJSON(&input); err != nil {

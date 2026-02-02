@@ -8,10 +8,14 @@ import (
 
 func InitRouter(handlers *Handlers, services *Services) *gin.Engine {
 	router := gin.New()
-	router.Use(middleware.UserIdentity(services.Auth))
-
-	router.Group("/api")
 	handlers.Auth.InitAuthRoutes(router)
 
+	api := router.Group("/api")
+	api.Use(middleware.UserIdentity(services.Auth))
+	{
+
+		handlers.Track.InitTrackRoutes(api)
+	}
+	
 	return router
 }
