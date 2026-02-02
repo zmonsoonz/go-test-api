@@ -42,7 +42,7 @@ func (r *TrackRep) GetAll(userId int) ([]domain.Track, error) {
 func (r *TrackRep) GetById(id, userId int) (domain.Track, error) {
 	var track domain.Track;
 
-	query := fmt.Sprintf("SELECT tr.id, tr.description, tr.uploaded_at FROM %s tr INNER JOIN %s lb ON tr.library_id = lb.id WHERE lb.user_id = $1 AND tr.id = $2", 
+	query := fmt.Sprintf("SELECT tr.id,  tr.library_id, tr.title, tr.description, tr.uploaded_at FROM %s tr INNER JOIN %s lb ON tr.library_id = lb.id WHERE lb.user_id = $1 AND tr.id = $2", 
 	postgres.TracksTable, postgres.LibrariesTable)
 
 	err := r.db.Get(&track, query, userId, id)
@@ -50,10 +50,14 @@ func (r *TrackRep) GetById(id, userId int) (domain.Track, error) {
 	return track, err
 }
 
-// func (r *TrackRep) Delete(id int) error {
-// 	query := fmt.Sprintf("DELETE FROM %s tr INNER JOIN %s lb ON tr.library_id = lb.id WHERE lb.user_id = $1 AND tr.id = $2", 
-// 	postgres.TracksTable, postgres.LibrariesTable)
-// }
+func (r *TrackRep) Delete(id, userId int) error {
+	query := fmt.Sprintf("DELETE FROM %s tr USING %s lb WHERE tr.library_id = lb.id AND lb.user_id = $1 AND tr.id = $2", 
+	postgres.TracksTable, postgres.LibrariesTable)
+
+	_, err := r.db.Exec(query, userId, id)
+
+	return err
+}
 
 // func (r *TrackRep) Update()  error {
 

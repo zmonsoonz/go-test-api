@@ -9,7 +9,7 @@ type TrackService interface {
 	Create(track domain.Track, userId int) (int, error)
 	GetById(id int, userId int) (domain.Track, error)
 	// Update(c gin.Context, track domain.Track) error
-	// Delete(c gin.Context, id int) error
+	Delete(id int, userId int) error
 }
 
 type TrackRepository interface {
@@ -17,5 +17,5 @@ type TrackRepository interface {
 	Create(track domain.Track, userId int) (int, error)
 	GetById(id int, userId int) (domain.Track, error)
 	// Update(c gin.Context, track domain.Track) error
-	// Delete(c gin.Context, id int) error
+	Delete(id, userId int) error
 }

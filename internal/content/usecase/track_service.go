@@ -26,3 +26,7 @@ func (s *TrackService) GetAll(userId int) ([]domain.Track, error) {
 func (s *TrackService) GetById(id int, userId int) (domain.Track, error) {
 	return s.repository.GetById(id, userId)
 }
+
+func (s *TrackService) Delete(id int, userId int) error {
+	return s.repository.Delete(id, userId)
+}
