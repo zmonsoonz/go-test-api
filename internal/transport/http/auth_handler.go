@@ -32,7 +32,7 @@ func (h *Handler) SignUp (c *gin.Context) {
 		return
 	}
          
-	id, err := h.authService.CreateUser(input)
+	id, err := h.authService.SignUp(input)
 	if err != nil {
 		httpx.NewErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
@@ -55,7 +55,7 @@ func (h *Handler) SignIn (c *gin.Context)  {
 		return
 	}
          
-	token, err := h.authService.GenerateToken(input.Username, input.Password)
+	token, err := h.authService.SignIn(input.Username, input.Password)
 	if err != nil {
 		httpx.NewErrorResponse(c, http.StatusUnauthorized, err.Error())
 		return

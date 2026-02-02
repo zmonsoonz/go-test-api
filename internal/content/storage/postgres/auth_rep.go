@@ -15,7 +15,7 @@ func NewAuthRep(db *sqlx.DB) *AuthRep {
 	return &AuthRep{db: db}
 }
 
-func (r *AuthRep) CreateUser(user domain.User) (int, error)  {
+func (r *AuthRep) Create(user domain.User) (int, error)  {
 	tx, err := r.db.Begin()
 	if err != nil {
 		return 0, err
@@ -41,7 +41,7 @@ func (r *AuthRep) CreateUser(user domain.User) (int, error)  {
 }
 
 
-func (r *AuthRep) GetUser(username string) (domain.User, error)  {
+func (r *AuthRep) GetByUsername(username string) (domain.User, error)  {
 	var user domain.User
 	query := fmt.Sprintf("SELECT id, password_hash FROM %s WHERE username = $1", postgres.UsersTable)
 

@@ -6,7 +6,6 @@ import (
 )
 
 type Services struct {
-	User ports.UserService
 	Auth ports.AuthService
 }
 

@@ -5,12 +5,12 @@ import (
 )
 
 type AuthService interface {
-	CreateUser(user domain.User) (int, error)
-	GenerateToken(username, password string) (string, error)
+	SignUp(user domain.User) (int, error)
+	SignIn(username, password string) (string, error)
 	ParseToken(token string) (int, error)
 }
 
 type AuthRepository interface {
-	CreateUser(user domain.User) (int, error)
-	GetUser(username string) (domain.User, error)
+	Create(user domain.User) (int, error)
+	GetByUsername(username string) (domain.User, error)
 }

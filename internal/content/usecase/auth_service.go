@@ -26,10 +26,10 @@ func NewAuthService(repository ports.AuthRepository) *AuthService {
 	return &AuthService{repository: repository}
 }
 
-func (s *AuthService) CreateUser(user domain.User) (int, error)  {
+func (s *AuthService) SignUp(user domain.User) (int, error)  {
 	user.Password = generatePasswordHash(user.Password)
 	user.CreatedAt = time.Now().Unix()
-	return s.repository.CreateUser(user)
+	return s.repository.Create(user)
 } 
 
 func generatePasswordHash(password string) string {
@@ -37,8 +37,8 @@ func generatePasswordHash(password string) string {
 	return string(hash)
 }
 
-func (s *AuthService) GenerateToken(username, password string) (string, error)  {
-	user, err := s.repository.GetUser(username)
+func (s *AuthService) SignIn(username, password string) (string, error)  {
+	user, err := s.repository.GetByUsername(username)
 	if err != nil {
 		return "", err
 	}
