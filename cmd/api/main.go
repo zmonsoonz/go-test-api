@@ -1,6 +1,10 @@
 package main
 
 import (
+	"context"
+	"os"
+	"os/signal"
+
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 	"github.com/sirupsen/logrus"
@@ -31,8 +35,21 @@ func main()  {
 	
 	s := bootstrap.NewServer()
 
-	if err := s.Run(cfg.Http, router); err != nil {
-		logrus.Fatalf("server stopped with error: %v", err)
+	go func() {
+		if err := s.Run(cfg.Http, router); err != nil {
+			logrus.Fatalf("server stopped with error: %v", err)
+		}
+	}()
+
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, os.Interrupt)
+	<-quit
+	logrus.Println("shutting down")
+	if err := s.Shutdown(context.Background()); err != nil {
+		logrus.Fatalf("failed to shutdown server: %v", err)
+	}
+	if err := db.Close(); err != nil { 
+		logrus.Fatalf("failed to close database connection: %v", err)
 	}
 
 }
