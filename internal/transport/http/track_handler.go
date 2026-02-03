@@ -26,6 +26,7 @@ func (h *TrackHandler) InitTrackRoutes(r gin.IRouter) {
 		tracks.GET("/:id", h.GetTrackById)
 		tracks.GET("/", h.GetAll)
 		tracks.DELETE("/:id", h.Delete)
+		tracks.PATCH("/:id", h.Update)
 	}
 }
 func (h *TrackHandler) Create(c *gin.Context) {
@@ -104,6 +105,35 @@ func (h *TrackHandler) Delete(c *gin.Context)  {
 	}
 
 	err = h.trackService.Delete(id, userId)
+	if err != nil {
+		httpx.NewErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, httpx.StatusResponse{
+		Status: "ok",
+	})
+}
+
+func (h *TrackHandler) Update(c *gin.Context) {
+	var input domain.UpdateTrackInput;
+	userId, err := middleware.GetUserId(c);
+	if err != nil {
+		httpx.NewErrorResponse(c, http.StatusUnauthorized, err.Error())
+		return
+	}
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		httpx.NewErrorResponse(c, http.StatusBadRequest, "invalid id param")
+		return
+	}
+
+	if err := c.BindJSON(&input); err != nil {
+		httpx.NewErrorResponse(c, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	err = h.trackService.Update(input, id, userId)
 	if err != nil {
 		httpx.NewErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return

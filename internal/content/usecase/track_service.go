@@ -30,3 +30,7 @@ func (s *TrackService) GetById(id int, userId int) (domain.Track, error) {
 func (s *TrackService) Delete(id int, userId int) error {
 	return s.repository.Delete(id, userId)
 }
+
+func (s *TrackService) Update(input domain.UpdateTrackInput, id, userId int) error {
+	return s.repository.Update(input, id, userId)
+}

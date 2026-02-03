@@ -1,7 +1,9 @@
 package repository
 
 import (
+	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/jmoiron/sqlx"
 	"github.com/zmonsoonz/go-test-api/internal/content/domain"
@@ -59,9 +61,45 @@ func (r *TrackRep) Delete(id, userId int) error {
 	return err
 }
 
-// func (r *TrackRep) Update()  error {
+func (r *TrackRep) Update(input domain.UpdateTrackInput, id, userId int)  error {
+	setParts := []string{}
+	args := []interface{}{}
+	argId := 1
 
-// }
+	if input.Title != nil {
+		setParts = append(setParts, fmt.Sprintf("title = $%d", argId))
+		args = append(args, *input.Title)
+		argId++
+	}
+
+	if input.Description != nil {
+		setParts = append(setParts, fmt.Sprintf("description = $%d", argId))
+		args = append(args, *input.Description)
+		argId++
+	}
+
+	if len(setParts) == 0 {
+		return errors.New("no fields to update")
+	}
+
+	query := fmt.Sprintf(`
+		UPDATE tracks tr
+		SET %s
+		FROM libraries lb
+		WHERE tr.library_id = lb.id
+		  AND lb.user_id = $%d
+		  AND tr.id = $%d
+	`,
+		strings.Join(setParts, ", "),
+		argId,
+		argId+1,
+	)
+
+	args = append(args, userId, id)
+
+	_, err := r.db.Exec(query, args...)
+	return err
+}
 
 func (r *TrackRep) getLibraryId(userID int) (int, error) {
 	var id int
